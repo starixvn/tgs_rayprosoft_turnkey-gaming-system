@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Repositories\GameProviders.Repositories\GameProviders.Repositories.csproj" />
-    <ProjectReference Include="..\..\Services\BackOffice\BackOffice.csproj" />
     <ProjectReference Include="..\..\Services\Operations\Operations.csproj" />
     <ProjectReference Include="..\..\Shared\Game.ApiClients\Game.ApiClients.csproj" />
   </ItemGroup>
