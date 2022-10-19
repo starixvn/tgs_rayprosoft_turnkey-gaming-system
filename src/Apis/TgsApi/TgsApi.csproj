@@ -43,6 +43,8 @@
     <PackageReference Include="prometheus-net.AspNetCore.HealthChecks" Version="6.0.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.6.66" />
     <PackageReference Include="Tgs.CashService.Client" Version="0.1.5" />
+    <PackageReference Include="Tgs.Core" Version="1.0.10" />
+    <PackageReference Include="Tgs.Core.Infrastructures.Security" Version="0.0.1" />
     <PackageReference Include="Tgs.Interceptors" Version="0.2.1" />
     <PackageReference Include="Tgs.MessageQueue.MongoDB" Version="2.1.1" />
     <PackageReference Include="Tgs.MessageQueue.Nats" Version="2.1.6" />
@@ -54,7 +56,6 @@
     <ProjectReference Include="..\..\Services\GameOperations\GameOperations.csproj" />
     <ProjectReference Include="..\..\Services\PluggableServices\PluggableServices.csproj" />
     <ProjectReference Include="..\..\Shared\Game.ApiClients\Game.ApiClients.csproj" />
-    <ProjectReference Include="..\..\Shared\Game.Models\Game.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

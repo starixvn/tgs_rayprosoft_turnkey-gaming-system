@@ -10,11 +10,6 @@ WORKDIR /src
 COPY ["nuget.config", "."]
 COPY ["src/Workers/Schedulers/Schedulers.csproj", "src/Workers/Schedulers/"]
 COPY ["src/Repositories/GameProviders.Repositories/GameProviders.Repositories.csproj", "src/Repositories/GameProviders.Repositories/"]
-COPY ["src/Services/BackOffice/BackOffice.csproj", "src/Services/BackOffice/"]
-COPY ["src/Repositories/TgsTransaction.Repositories/TgsTransaction.Repositories.csproj", "src/Repositories/TgsTransaction.Repositories/"]
-COPY ["src/Services/TgsTransaction.Core/TgsTransaction.Core.csproj", "src/Services/TgsTransaction.Core/"]
-COPY ["src/Services/Bucket/PlayerBucket.Core.csproj", "src/Services/Bucket/"]
-COPY ["src/Services/Wallet.Core/Wallet.Core.csproj", "src/Services/Wallet.Core/"]
 COPY ["src/Services/Operations/Operations.csproj", "src/Services/Operations/"]
 COPY ["src/Shared/Game.ApiClients/Game.ApiClients.csproj", "src/Shared/Game.ApiClients/"]
 COPY ["src/Shared/Game.Models/Game.Models.csproj", "src/Shared/Game.Models/"]
@@ -25,7 +20,7 @@ RUN dotnet build "Schedulers.csproj" -c $BuildConfiguration -o /app/build
 
 FROM build AS publish
 ARG BuildConfiguration
-RUN dotnet publish "Schedulers.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Schedulers.csproj" -c $BuildConfiguration -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
