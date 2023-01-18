@@ -1,13 +1,14 @@
 ﻿using System.Threading.Tasks;
 using TGS.Core.Models.Messages;
 using Tgs.Promotion.Clients;
+using System;
 
 namespace TGS.Workers.Schedulers.Jobs.Promotion;
 
 public interface IPromotionSettlementWeeklyWorkerService
 {
-    Task<TgsResponse> ExecutionAsync();
-    Task<TgsResponse> ManualExecutionAsync(string from, string to);
+    Task<TgsResponse> ExecutionAsync(int timeSpanMinutes);
+    Task<TgsResponse> ManualExecutionAsync(DateOnly from, DateOnly to, int timeSpanMinutes);
 }
 
 public class PromotionSettlementWeeklyWorkerService : IPromotionSettlementWeeklyWorkerService
@@ -20,16 +21,16 @@ public class PromotionSettlementWeeklyWorkerService : IPromotionSettlementWeekly
         _client = client;
     }
 
-    async Task<TgsResponse> IPromotionSettlementWeeklyWorkerService.ExecutionAsync()
+    async Task<TgsResponse> IPromotionSettlementWeeklyWorkerService.ExecutionAsync(int timeSpanMinutes)
     {
-        var response = await _client.CreatePromotionSettleDataWeeklyAsync(new()).ConfigureAwait(false);
+        var response = await _client.CreatePromotionSettleDataWeeklyAsync(new(timeSpanMinutes)).ConfigureAwait(false);
         return new() {ErrorMessage = response.Message};
     }
 
-    async Task<TgsResponse> IPromotionSettlementWeeklyWorkerService.ManualExecutionAsync(string from,
-        string to)
+    async Task<TgsResponse> IPromotionSettlementWeeklyWorkerService.ManualExecutionAsync(DateOnly from,
+        DateOnly to, int timeSpanMinutes)
     {
-        var response = await _client.CreatePromotionSettleDataWeeklyAsync(new(from, to)).ConfigureAwait(false);
+        var response = await _client.CreatePromotionSettleDataWeeklyAsync(new(timeSpanMinutes, from, to)).ConfigureAwait(false);
         return new() {ErrorMessage = response.Message};
     }
 }
