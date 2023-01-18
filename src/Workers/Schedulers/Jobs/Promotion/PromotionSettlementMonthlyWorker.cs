@@ -14,16 +14,16 @@ public sealed class PromotionSettlementMonthlyWorker : BaseWork<TgsResponse>
 {
     private readonly IPromotionSettlementMonthlyWorkerService _worker;
     private readonly ISettingQueries _settingQueries;
-    private readonly ISystemClock _dateTimeExtension;
+    private readonly ISystemClock _clock;
 
     public PromotionSettlementMonthlyWorker(
         IPromotionSettlementMonthlyWorkerService worker,
         ISettingQueries settingQueries,
-        ISystemClock dateTimeExtension)
+        ISystemClock clock)
     {
         _worker = worker;
         _settingQueries = settingQueries;
-        _dateTimeExtension = dateTimeExtension;
+        _clock = clock;
     }
 
     public override async Task<TgsResponse> ExecuteAsync(object context)
@@ -32,7 +32,7 @@ public sealed class PromotionSettlementMonthlyWorker : BaseWork<TgsResponse>
 
         var timeSpanMinutes = JsonSerializer.Deserialize<Dictionary<int, int?>>(value);
 
-        var hour = _dateTimeExtension.UtcNow.Hour;
+        var hour = _clock.UtcNow.Hour;
 
         if (timeSpanMinutes?.TryGetValue(hour, out var time) == null)
         {
