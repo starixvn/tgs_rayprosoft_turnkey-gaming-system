@@ -17,7 +17,7 @@ public class PromotionDailyScheduleWorkerTests
         var promotionSettlementDailyWorkerServiceMock = new Mock<IPromotionSettlementDailyWorkerService>();
         var settingQueriesMock = new Mock<ISettingQueries>();
 
-        var utcNowMock = new Mock<IDateTimeOffsetExtension>();
+        var utcNowMock = new Mock<ISystemClock>();
 
         var worker = new PromotionSettlementDailyWorker(promotionSettlementDailyWorkerServiceMock.Object, settingQueriesMock.Object, utcNowMock.Object);
 
@@ -41,7 +41,7 @@ public class PromotionDailyScheduleWorkerTests
         var promotionSettlementDailyWorkerServiceMock = new Mock<IPromotionSettlementDailyWorkerService>();
         var settingQueriesMock = new Mock<ISettingQueries>();
 
-        var utcNowMock = new Mock<IDateTimeOffsetExtension>();
+        var utcNowMock = new Mock<ISystemClock>();
 
         var worker = new PromotionSettlementDailyWorker(promotionSettlementDailyWorkerServiceMock.Object, settingQueriesMock.Object, utcNowMock.Object);
 
@@ -65,7 +65,7 @@ public class PromotionDailyScheduleWorkerTests
         var promotionSettlementDailyWorkerServiceMock = new Mock<IPromotionSettlementDailyWorkerService>();
         var settingQueriesMock = new Mock<ISettingQueries>();
 
-        var utcNowMock = new Mock<IDateTimeOffsetExtension>();
+        var utcNowMock = new Mock<ISystemClock>();
 
         var worker = new PromotionSettlementDailyWorker(promotionSettlementDailyWorkerServiceMock.Object, settingQueriesMock.Object, utcNowMock.Object);
 

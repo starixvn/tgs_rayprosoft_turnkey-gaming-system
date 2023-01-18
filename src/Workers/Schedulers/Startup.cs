@@ -163,7 +163,7 @@ public class Startup
         services.AddTransient<IPromotionSettlementMonthlyWorkerService, PromotionSettlementMonthlyWorkerService>();
         services.AddTransient<IFillPlayerBucketMinutelyWorkerService, FillPlayerBucketMinutelyWorkerService>();
         services.AddTransient<IPlayerAllAgentRebateWorkerService, PlayerAllAgentRebateWorkerService>();
-        services.AddTransient<IDateTimeOffsetExtension, DateTimeOffsetExtension>();
+        services.AddTransient<ISystemClock, SystemClock>();
     }
 
     private static Type[] GetModuleTypes() => new[]

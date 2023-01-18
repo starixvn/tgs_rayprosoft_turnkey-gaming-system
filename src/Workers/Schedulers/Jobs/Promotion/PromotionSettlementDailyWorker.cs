@@ -14,12 +14,12 @@ public sealed class PromotionSettlementDailyWorker : BaseWork<TgsResponse>
 {
     private readonly IPromotionSettlementDailyWorkerService _worker;
     private readonly ISettingQueries _settingQueries;
-    private readonly IDateTimeOffsetExtension _dateTimeExtension;
+    private readonly ISystemClock _dateTimeExtension;
 
     public PromotionSettlementDailyWorker(
         IPromotionSettlementDailyWorkerService worker,
         ISettingQueries settingQueries,
-        IDateTimeOffsetExtension dateTimeExtension)
+        ISystemClock dateTimeExtension)
     {
         _worker = worker;
         _settingQueries = settingQueries;

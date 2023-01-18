@@ -2,11 +2,11 @@
 
 namespace TGS.Workers.Schedulers.Jobs.Promotion
 {
-    public interface IDateTimeOffsetExtension
+    public interface ISystemClock
     {
         DateTimeOffset UtcNow { get; }
     }
-    public class DateTimeOffsetExtension : IDateTimeOffsetExtension
+    public class SystemClock : ISystemClock
     {
         public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
     }
