@@ -15,33 +15,63 @@ namespace TGS.Workers.Schedulers.Jobs;
 public class PromotionJobManagement
 {
     private readonly IPromotionSettlementDailyWorkerService _promotionSettlementDailyWorker;
+    private readonly IPromotionSettlementWeeklyWorkerService _promotionSettlementWeeklyWorker;
 
-    public PromotionJobManagement(IPromotionSettlementDailyWorkerService promotionSettlementDailyWorker)
+    public PromotionJobManagement(
+        IPromotionSettlementDailyWorkerService promotionSettlementDailyWorker,
+        IPromotionSettlementWeeklyWorkerService promotionSettlementWeeklyWorker)
     {
         _promotionSettlementDailyWorker = promotionSettlementDailyWorker;
+        _promotionSettlementWeeklyWorker = promotionSettlementWeeklyWorker;
     }
 
 
     [Queue(Consts.Queue.Schedule)]
     [Job]
-    [DisplayName("create promotion dispatch")]
-    [Description("建立每日派發資料")]
-    [AutomaticRetry(Attempts = 3)]
+    [DisplayName("send promotion daily")]
+    [Description("發送每日活動")]
+    [AutomaticRetry(Attempts = 0)]
     [DisableConcurrentExecution(90)]
-    public async Task<TgsResponse> CreatePromotionDispatchAsync(
+    public async Task<TgsResponse> SendPromotionDailyAsync(
         [DisplayData("指定日期",
             "2021/02/18",
             "Default offset +08:00")]
-        string dateTime = "",
+        string dateTime,
+        [DisplayData("指定時區",
+            "",
+            "+08:00 = 480")]
+        int timeSpanMinutes = 480,
         PerformContext context = null)
     {
         context.WriteLine($"Start time:{DateTime.Now}");
 
-        if (DateTimeOffset.TryParse($"{dateTime} +8:00", out _))
-        {
-            return await _promotionSettlementDailyWorker.ManualExecutionAsync(dateTime);
-        }
-
-        return new() {ErrorMessage = "DateTime invalided"};
+        return await _promotionSettlementDailyWorker.ManualExecutionAsync(DateOnly.Parse(dateTime), timeSpanMinutes);
     }
+
+    [Queue(Consts.Queue.Schedule)]
+    [Job]
+    [DisplayName("send promotion weekly")]
+    [Description("發送每週活動")]
+    [AutomaticRetry(Attempts = 0)]
+    [DisableConcurrentExecution(90)]
+    public async Task<TgsResponse> SendPromotionWeeklyAsync(
+        [DisplayData("指定from日期",
+            "2021/02/18",
+            "Default offset +08:00")]
+        string dateTimeFrom,
+        [DisplayData("指定to日期",
+            "2021/02/18",
+            "Default offset +08:00")]
+        string dateTimeTo,
+        [DisplayData("指定時區",
+            "",
+            "+08:00 = 480")]
+        int timeSpanMinutes = 480,
+        PerformContext context = null)
+    {
+        context.WriteLine($"Start time:{DateTime.Now}");
+
+        return await _promotionSettlementWeeklyWorker.ManualExecutionAsync(DateOnly.Parse(dateTimeFrom), DateOnly.Parse(dateTimeTo), timeSpanMinutes);
+    }
+
 }
