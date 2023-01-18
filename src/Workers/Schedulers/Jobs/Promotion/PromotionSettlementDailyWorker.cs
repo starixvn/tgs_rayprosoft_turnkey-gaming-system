@@ -28,7 +28,7 @@ public sealed class PromotionSettlementDailyWorker : BaseWork<TgsResponse>
 
     public override async Task<TgsResponse> ExecuteAsync(object context)
     {
-        var value = await _settingQueries.GetSettingValueByKeyAsync("PromotionTimeSpanMinutes");
+        var value = await _settingQueries.GetSettingValueByKeyAsync("PromotionDailyTimeSpanMinutes");
 
         var timeSpanMinutes = JsonSerializer.Deserialize<Dictionary<int, int?>>(value);
 
