@@ -23,7 +23,7 @@ public class FillPlayerBucketMinutelyWorkerService : IFillPlayerBucketMinutelyWo
 
     async Task<TgsResponse> IFillPlayerBucketMinutelyWorkerService.ExecutionAsync()
     {
-        var startDate = DateTimeOffset.UtcNow.AddMinutes(-1);
+        var startDate = DateTimeOffset.UtcNow.AddMinutes(-3);
         var response = await _client.FillPlayerBucketMinutelyAsync(new(startDate));
         return new() { ErrorMessage = response.Message };
     }
