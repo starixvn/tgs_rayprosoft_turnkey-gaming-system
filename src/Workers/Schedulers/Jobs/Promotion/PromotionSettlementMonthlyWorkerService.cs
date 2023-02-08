@@ -1,35 +1,38 @@
 ﻿using System.Threading.Tasks;
 using TGS.Core.Models.Messages;
 using Tgs.Promotion.Clients;
+using TGS.Services.Operations.Queries;
 
 namespace TGS.Workers.Schedulers.Jobs.Promotion;
 
 public interface IPromotionSettlementMonthlyWorkerService
 {
-    Task<TgsResponse> ExecutionAsync();
-    Task<TgsResponse> ManualExecutionAsync(string from, string to);
+    Task<TgsResponse> ExecutionAsync(int timeSpanMinutes);
+    Task<TgsResponse> ManualExecutionAsync(int timeSpanMinutes);
 }
 
 public class PromotionSettlementMonthlyWorkerService : IPromotionSettlementMonthlyWorkerService
 {
     private readonly IPromotionBonusClient _client;
+    private readonly ISettingQueries _settingQueries;
 
     public PromotionSettlementMonthlyWorkerService(
-        IPromotionBonusClient client)
+        IPromotionBonusClient client,
+        ISettingQueries settingQueries)
     {
         _client = client;
+        _settingQueries = settingQueries;
     }
 
-    async Task<TgsResponse> IPromotionSettlementMonthlyWorkerService.ExecutionAsync()
+    async Task<TgsResponse> IPromotionSettlementMonthlyWorkerService.ExecutionAsync(int timeSpanMinutes)
     {
-        var response = await _client.CreatePromotionSettleDataMonthlyAsync(new()).ConfigureAwait(false);
+        var response = await _client.CreatePromotionSettleDataMonthlyAsync(new(timeSpanMinutes)).ConfigureAwait(false);
         return new() {ErrorMessage = response.Message};
     }
 
-    async Task<TgsResponse> IPromotionSettlementMonthlyWorkerService.ManualExecutionAsync(string from,
-        string to)
+    async Task<TgsResponse> IPromotionSettlementMonthlyWorkerService.ManualExecutionAsync(int timeSpanMinutes)
     {
-        var response = await _client.CreatePromotionSettleDataMonthlyAsync(new(from, to)).ConfigureAwait(false);
+        var response = await _client.CreatePromotionSettleDataMonthlyAsync(new(timeSpanMinutes)).ConfigureAwait(false);
         return new() {ErrorMessage = response.Message};
     }
 }
