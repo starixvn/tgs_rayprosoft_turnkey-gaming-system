@@ -1,8 +1,6 @@
 using System;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
@@ -22,19 +20,16 @@ using TGS.Workers.Schedulers.Jobs.Promotion;
 using TGS.Workers.Schedulers.Jobs.Reports;
 using TGS.Workers.Schedulers.Jobs.Rounds;
 using TGS.Workers.Schedulers.Services;
-using GlobalConsts = TGS.Core.Models.Consts;
 
 namespace TGS.Workers.Schedulers;
 
 public class Startup
 {
     private readonly IConfiguration _configuration;
-    private readonly IWebHostEnvironment _env;
 
-    public Startup(IConfiguration configuration, IWebHostEnvironment env)
+    public Startup(IConfiguration configuration)
     {
         _configuration = configuration;
-        _env = env;
     }
 
     public void Configure(IApplicationBuilder app)
@@ -79,14 +74,17 @@ public class Startup
             .AddReportAggregateClient((options, sp) =>
             {
                 var config = sp.GetRequiredService<IConfiguration>();
-
-                options.BaseUrl = config.GetValue<Uri>("ReportAggregate:Url");
+                options.BaseUrl = config.GetValue<Uri>("Schedule:ReportAggregate");
             })
             .AddPromotionClientServices((options, sp) =>
             {
                 var config = sp.GetRequiredService<IConfiguration>();
-
-                config.GetSection("Promotion").Bind(options);
+                options.Url = config.GetValue<Uri>("Schedule:Promotion");
+            })
+            .AddPromotionRebateClient((options, sp) =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+                options.Url = config.GetValue<Uri>("Schedule:PromotionRebate");
             })
             .AddHangfireScheduler(
                 _configuration,
@@ -94,7 +92,6 @@ public class Startup
                 typesToUseManagementPage: GetModuleTypes())
             .AddMail(_configuration)
             .AddProfitRebateClient(_configuration);
-
         services
             .AddRedis((options, sp) =>
             {
@@ -112,7 +109,7 @@ public class Startup
                     {
                         var config = sp.GetRequiredService<IConfiguration>();
 
-                        options.Url = config.GetValue<string>("NatsSetting:Urls");
+                        options.Url = config.GetConnectionString("Nats")!;
                     });
             });
 
@@ -133,16 +130,10 @@ public class Startup
 
         services.AddControllers();
 
-        services.AddGameProvidersMognoRepository((options, sp) =>
-        {
-            var config = sp.GetRequiredService<IConfiguration>();
-            options.MongoConnectionString = config.GetValue<string>("GameProviders:ConnectionString");
-        });
-
         services.AddHttpClient<IEmailClient, EmailClient>((sp, c) =>
         {
-            var url = _configuration.GetSection("Email:Url");
-            c.BaseAddress = new Uri(url.Value);
+            var url = _configuration.GetSection("Schedule:Email");
+            c.BaseAddress = new Uri(url.Value!);
         });
 
         services.AddGameProviderScheduleLockRepository();
@@ -163,6 +154,8 @@ public class Startup
         services.AddTransient<IPromotionSettlementMonthlyWorkerService, PromotionSettlementMonthlyWorkerService>();
         services.AddTransient<IFillPlayerBucketMinutelyWorkerService, FillPlayerBucketMinutelyWorkerService>();
         services.AddTransient<IPlayerAllAgentRebateWorkerService, PlayerAllAgentRebateWorkerService>();
+        services.AddTransient<IPromotionSettleDailyWorkerService, PromotionSettleDailyWorkerService>();
+        services.AddTransient<IPromotionSendRebateDailyWeeklyWorkerService, PromotionSendRebateDailyWeeklyWorkerService>();
         services.AddTransient<ISystemClock, SystemClock>();
     }
 
@@ -170,6 +163,7 @@ public class Startup
     {
         typeof(AggregateJobManagement),
         typeof(RebateAndDividendJobManagement),
-        typeof(PromotionJobManagement)
+        typeof(PromotionJobManagement),
+        typeof(PromotionRebateJobManagement)
     };
 }
