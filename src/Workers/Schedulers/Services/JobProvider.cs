@@ -80,12 +80,6 @@ public sealed class JobProvider : BaseJobProvider
                 null,
                 typeof(PlatformCreditBalanceWorker),
                 TimeZoneInfo.FindSystemTimeZoneById(_TimeZoneId))
-
-            //new JobDescription(new("EFB74D1F-355C-4298-9E60-33C003B16ECE"), "0 */20 * * * *", null,
-            //    typeof(CancelFailedTransactionsJobWorker), TimeZoneInfo.FindSystemTimeZoneById(_TimeZoneId)),
-
-            //new JobDescription(new("8FB79844-E7FA-48FF-91EA-1C3899A0901B"), Cron.Minutely(), null,
-            //    typeof(WMCasinoGameRecordJobWorker), TimeZoneInfo.FindSystemTimeZoneById(_TimeZoneId)),
         )
 
     {
