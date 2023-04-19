@@ -2,6 +2,7 @@
 using Hangfire;
 using Hangfire.Console;
 using Hangfire.Dashboard.Management;
+using Hangfire.Redis.StackExchange;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
