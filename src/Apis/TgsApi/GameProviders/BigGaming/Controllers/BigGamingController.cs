@@ -142,10 +142,15 @@ public sealed class BigGamingController : ControllerBase
         var playerCode = items.Get(Consts.ContextItems.PlayerCode, string.Empty);
         var getBalance = await _actions.GetBalanceAsync(Consts.GameProvider.BigGaming, playerCode).ConfigureAwait(false);
 
+        var balance = getBalance.Balance;
+        if (balance > 0)
+        {
+            balance = Math.Floor(balance * 100) / 100;
+        }
         return new()
         {
             Id = baseRequest.Id,
-            Result = JsonDocument.Parse(JsonSerializer.Serialize(getBalance.Balance)),
+            Result = JsonDocument.Parse(JsonSerializer.Serialize(balance)),
             Error = null,
             Jsonrpc = baseRequest.Jsonrpc
         };
@@ -291,10 +296,16 @@ public sealed class BigGamingController : ControllerBase
 
         var transfer = await _service.TransferAsync(gameProviderId, playerCode, data.BizId.ToString(), decimal.Parse(data.Amount)).ConfigureAwait(false);
 
+        var balance = transfer.Balance;
+        if (balance > 0)
+        {
+            balance = Math.Floor(balance * 100) / 100;
+        }
+
         return new()
         {
             Id = baseRequest.Id,
-            Result = JsonDocument.Parse(JsonSerializer.Serialize(transfer.Balance)),
+            Result = JsonDocument.Parse(JsonSerializer.Serialize(balance)),
             Error = null,
             Jsonrpc = baseRequest.Jsonrpc
         };
