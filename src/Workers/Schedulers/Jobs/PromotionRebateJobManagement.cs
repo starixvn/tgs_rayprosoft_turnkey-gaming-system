@@ -6,7 +6,6 @@ using Hangfire.Console;
 using Hangfire.Dashboard.Management.Metadata;
 using Hangfire.Dashboard.Management.Support;
 using Hangfire.Server;
-using TGS.Core.Models.Messages;
 using TGS.Workers.Schedulers.Jobs.Promotion;
 
 namespace TGS.Workers.Schedulers.Jobs;
@@ -14,10 +13,10 @@ namespace TGS.Workers.Schedulers.Jobs;
 [ManagementPage("返水活動手動Schedule", Consts.Queue.Schedule)]
 public class PromotionRebateJobManagement
 {
-    private readonly IPromotionSettleDailyWorkerService _promotionSettleDailyWorkerService;
+    private readonly IPromotionSettleRebateDailyWorkerService _promotionSettleDailyWorkerService;
     private readonly IPromotionSendRebateDailyWeeklyWorkerService _promotionSendRebateDailyWeeklyWorkerService;
     public PromotionRebateJobManagement(
-        IPromotionSettleDailyWorkerService promotionSettleDailyWorkerService,
+        IPromotionSettleRebateDailyWorkerService promotionSettleDailyWorkerService,
         IPromotionSendRebateDailyWeeklyWorkerService promotionSendRebateDailyWeeklyWorkerService)
     {
         _promotionSettleDailyWorkerService = promotionSettleDailyWorkerService;
@@ -26,8 +25,8 @@ public class PromotionRebateJobManagement
 
     [Queue(Consts.Queue.Schedule)]
     [Job]
-    [DisplayName("promotion settle daily")]
-    [Description("每日結算(未派發)")]
+    [DisplayName("promotion rebate settle daily")]
+    [Description("返水每日結算(未派發僅計算)")]
     [AutomaticRetry(Attempts = 0)]
     [DisableConcurrentExecution(90)]
     public Task PromotionSettleDailyAsync(
@@ -48,8 +47,8 @@ public class PromotionRebateJobManagement
 
     [Queue(Consts.Queue.Schedule)]
     [Job]
-    [DisplayName("promotion send daily and weekly")]
-    [Description("每日每周反水派發")]
+    [DisplayName("promotion rebate send daily and weekly")]
+    [Description("返水每日每周反水派發")]
     [AutomaticRetry(Attempts = 0)]
     [DisableConcurrentExecution(90)]
     public Task PromotionSendDailyWeeklyAsync(

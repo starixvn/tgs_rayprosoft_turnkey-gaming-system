@@ -2,12 +2,8 @@ using System;
 using System.Linq;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
@@ -20,6 +16,7 @@ using TGS.Core.Infrastructures.ApiClient;
 using TGS.Core.Infrastructures.Mail;
 using TGS.Core.Infrastructures.Transactions;
 using TGS.Core.Infrastructures.WebApiServices;
+using Tgs.Promotion.ReliefMoney.Client.DependencyInjection;
 using TGS.Services.BackOffice.Infrastructure.DataService;
 using TGS.Services.Operations.Extensions;
 using TGS.Workers.Schedulers;
@@ -118,6 +115,12 @@ builder.Services
         var config = sp.GetRequiredService<IConfiguration>();
         options.Url = config.GetValue<Uri>("Schedule:PromotionRebate");
     })
+    .AddPromotionReliefClient((options, sp) =>
+    {
+        var config = sp.GetRequiredService<IConfiguration>();
+        options.Url = config.GetValue<Uri>("Schedule:PromotionRelief");
+    })
+
     .AddHangfireScheduler(
         builder.Configuration,
         jobProvider: new JobProvider(),
@@ -179,13 +182,12 @@ builder.Services.AddTransient<IBrandGameProviderService, BrandGameProviderServic
     .AddTransient<IRoundAggregateWorkerService, RoundAggregateWorkerService>()
     .AddTransient<IPlayerRebateWorkerService, PlayerRebateWorkerService>()
     .AddTransient<IAgentDividendWorkerService, AgentDividendWorkerService>()
-    .AddTransient<IPromotionSettlementDailyWorkerService, PromotionSettlementDailyWorkerService>()
-    .AddTransient<IPromotionSettlementWeeklyWorkerService, PromotionSettlementWeeklyWorkerService>()
-    .AddTransient<IPromotionSettlementMonthlyWorkerService, PromotionSettlementMonthlyWorkerService>()
     .AddTransient<IFillPlayerBucketMinutelyWorkerService, FillPlayerBucketMinutelyWorkerService>()
     .AddTransient<IPlayerAllAgentRebateWorkerService, PlayerAllAgentRebateWorkerService>()
-    .AddTransient<IPromotionSettleDailyWorkerService, PromotionSettleDailyWorkerService>()
+    .AddTransient<IPromotionSettleRebateDailyWorkerService, PromotionSettleRebateDailyWorkerService>()
     .AddTransient<IPromotionSendRebateDailyWeeklyWorkerService, PromotionSendRebateDailyWeeklyWorkerService>()
+    .AddTransient<IPromotionSettleReliefDailyWorkerService, PromotionSettleReliefDailyWorkerService>()
+    .AddTransient<IPromotionSendReliefDailyWeeklyMonthlyWorkerService, PromotionSendReliefDailyWeeklyMonthlyWorkerService>()
     .AddTransient<ISystemClock, SystemClock>();
 
 var app = builder.Build();
@@ -220,6 +222,6 @@ static Type[] GetModuleTypes() => new[]
 {
     typeof(AggregateJobManagement),
     typeof(RebateAndDividendJobManagement),
-    typeof(PromotionJobManagement),
-    typeof(PromotionRebateJobManagement)
+    typeof(PromotionRebateJobManagement),
+    typeof(PromotionReliefJobManagement)
 };
