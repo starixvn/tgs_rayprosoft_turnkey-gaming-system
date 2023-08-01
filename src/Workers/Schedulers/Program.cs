@@ -200,21 +200,16 @@ app.UseRouting();
 
 app.UseHttpMetrics();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapHealthChecks("/health");
-
-    endpoints.MapMetrics();
-
-    endpoints.MapHangfireDashboard("/hangfire",
-        new DashboardOptions
+app.MapHealthChecks("/health");
+app.MapMetrics();
+app.MapHangfireDashboard("/hangfire",
+    new DashboardOptions
+    {
+        Authorization = new[]
         {
-            Authorization = new[]
-            {
-                new IgnoreHangfireAuthorizationFilter()
-            }
-        });
-});
+            new IgnoreHangfireAuthorizationFilter()
+        }
+    });
 
 app.Run();
 
