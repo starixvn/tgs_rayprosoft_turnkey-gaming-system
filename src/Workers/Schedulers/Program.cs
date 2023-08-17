@@ -16,6 +16,7 @@ using TGS.Core.Infrastructures.ApiClient;
 using TGS.Core.Infrastructures.Mail;
 using TGS.Core.Infrastructures.Transactions;
 using TGS.Core.Infrastructures.WebApiServices;
+using Tgs.Game.Type.Round.Aggregate.Client.DependencyInjection;
 using Tgs.Promotion.ReliefMoney.Client.DependencyInjection;
 using TGS.Services.BackOffice.Infrastructure.DataService;
 using TGS.Services.Operations.Extensions;
@@ -120,7 +121,11 @@ builder.Services
         var config = sp.GetRequiredService<IConfiguration>();
         options.Url = config.GetValue<Uri>("Schedule:PromotionRelief");
     })
-
+    .AddGameTypeRoundAggregateClient((options, sp) =>
+    {
+        var config = sp.GetRequiredService<IConfiguration>();
+        options.Url = config.GetValue<Uri>("Schedule:GameTypeRoundAggregate");
+    })
     .AddHangfireScheduler(
         builder.Configuration,
         jobProvider: new JobProvider(),
@@ -180,6 +185,7 @@ builder.Services
 builder.Services.AddTransient<IBrandGameProviderService, BrandGameProviderService>()
     .AddTransient<IPlayerAggregateReportWorkerService, PlayerAggregateReportWorkerService>()
     .AddTransient<IRoundAggregateWorkerService, RoundAggregateWorkerService>()
+    .AddTransient<IGameTypeRoundAggregateWorkerService, GameTypeRoundAggregateWorkerService>()
     .AddTransient<IPlayerRebateWorkerService, PlayerRebateWorkerService>()
     .AddTransient<IAgentDividendWorkerService, AgentDividendWorkerService>()
     .AddTransient<IFillPlayerBucketMinutelyWorkerService, FillPlayerBucketMinutelyWorkerService>()
