@@ -18,14 +18,17 @@ public class AggregateJobManagement
     private readonly IFillPlayerBucketMinutelyWorkerService _fillPlayerBucketMinutelyWorker;
     private readonly IPlayerAggregateReportWorkerService _playerAggregateWorker;
     private readonly IRoundAggregateWorkerService _roundAggregateWorker;
+    private readonly IGameTypeRoundAggregateWorkerService _gameTypeRoundAggregateWorker;
 
     public AggregateJobManagement(IRoundAggregateWorkerService roundAggregateWorker,
         IPlayerAggregateReportWorkerService playerAggregateWorker,
-        IFillPlayerBucketMinutelyWorkerService fillPlayerBucketMinutelyWorker)
+        IFillPlayerBucketMinutelyWorkerService fillPlayerBucketMinutelyWorker,
+        IGameTypeRoundAggregateWorkerService gameTypeRoundAggregateWorker)
     {
         _roundAggregateWorker = roundAggregateWorker;
         _playerAggregateWorker = playerAggregateWorker;
         _fillPlayerBucketMinutelyWorker = fillPlayerBucketMinutelyWorker;
+        _gameTypeRoundAggregateWorker = gameTypeRoundAggregateWorker;
     }
 
     [Queue(Consts.Queue.Schedule)]
@@ -120,4 +123,34 @@ public class AggregateJobManagement
 
         return new() {ErrorMessage = "DateTime invalided"};
     }
+
+    [Queue(Consts.Queue.Schedule)]
+    [Job]
+    [DisplayName("create game type round aggregate")]
+    [Description("新增15分鐘局集合指定的時間")]
+    [AutomaticRetry(Attempts = 3)]
+    [DisableConcurrentExecution(90)]
+    public async Task<TgsResponse> AddGameTypeRoundAggregateAsync(
+        [DisplayData("指定時間",
+            "2021/02/18 00:15:00",
+            "utc time",
+            "2023/08/17 00:15:00")]
+        string dateTime = "",
+        [DisplayData("指定往前幾節",
+            "",
+            "例5: 依指定時間執行往前推5節時間段")]
+        int count = 0,
+        PerformContext context = null)
+    {
+        context.WriteLine($"Start time:{DateTime.Now}");
+
+        if (!DateTimeOffset.TryParse(dateTime, out _))
+        {
+            return new() { ErrorMessage = "DateTime invalided" };
+        }
+
+        var endDate = DateTimeOffset.Parse($"{dateTime}Z").UtcDateTime;
+        return await _gameTypeRoundAggregateWorker.ManualExecutionAsync(endDate, count);
+    }
+
 }
