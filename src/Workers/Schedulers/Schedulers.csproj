@@ -19,6 +19,7 @@
     <PackageReference Include="prometheus-net.AspNetCore" Version="8.0.0" />
     <PackageReference Include="prometheus-net.AspNetCore.HealthChecks" Version="8.0.0" />
     <PackageReference Include="TGS.Core.Infrastructures.Mail" Version="0.0.6" />
+    <PackageReference Include="Tgs.Game.Type.Round.Aggregate.Client" Version="0.0.2" />
     <PackageReference Include="Tgs.ProfitRebate.Client" Version="1.0.19" />
     <PackageReference Include="Tgs.Promotion.Client" Version="1.0.42" />
     <PackageReference Include="Tgs.Promotion.RebateService.Client" Version="0.0.3" />
