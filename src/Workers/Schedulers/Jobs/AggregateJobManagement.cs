@@ -39,35 +39,17 @@ public class AggregateJobManagement
     [DisableConcurrentExecution(90)]
     public async Task<TgsResponse> SetRoundGameSettingAsync(
         [DisplayData("指定日期",
-            "2021/02/18",
-            "Default offset +08:00")]
-        string dateTime = "",
-        [DisplayData("指定小時",
-            "",
-            "0~23, 13 = 13~14")]
-        int hour = 0,
-        [DisplayData("指定開始分",
-            "",
-            "0~59")]
-        int fromMinute = 0,
-        [DisplayData("指定結束分",
-            "",
-            "0~59, 0~50 = 從0分到51分內")]
-        int toMinute = 1,
-        [DisplayData("是否填水桶",
-            "true")]
-        bool fillPlayerBucket = true,
+            "2021/02/18 00:00:00",
+            "Default offset +08:00",
+            "2023/09/01 00:00:00")]
+        string dateTime,
         PerformContext context = null)
     {
         context.WriteLine($"Start time:{DateTime.Now}");
 
-        if (DateTimeOffset.TryParse($"{dateTime} +8:00", out _))
-        {
-            return await _fillPlayerBucketMinutelyWorker.ManualExecutionAsync(dateTime, hour, fromMinute, toMinute,
-                fillPlayerBucket);
-        }
-
-        return new() {ErrorMessage = "DateTime invalided"};
+        return DateTimeOffset.TryParse($"{dateTime} +8:00", out var _dateTime)
+            ? await _fillPlayerBucketMinutelyWorker.ManualExecutionAsync(_dateTime.UtcDateTime)
+            : new() {ErrorMessage = "DateTime invalided"};
     }
 
     [Queue(Consts.Queue.Schedule)]

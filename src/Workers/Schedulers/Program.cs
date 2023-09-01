@@ -30,6 +30,7 @@ using TGS.Workers.Schedulers.Jobs.Promotion;
 using TGS.Workers.Schedulers.Jobs.Reports;
 using TGS.Workers.Schedulers.Jobs.Rounds;
 using TGS.Workers.Schedulers.Services;
+using Tgs.Fill.In.Player.Bucket.Client.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -125,6 +126,11 @@ builder.Services
     {
         var config = sp.GetRequiredService<IConfiguration>();
         options.Url = config.GetValue<Uri>("Schedule:GameTypeRoundAggregate");
+    })
+    .AddFillInPlayerBucketClient((options, sp) =>
+    {
+        var config = sp.GetRequiredService<IConfiguration>();
+        options.Url = config.GetValue<Uri>("Schedule:FillInPlayerBucket");
     })
     .AddHangfireScheduler(
         builder.Configuration,

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using TGS.Core.Models.Messages;
-using Tgs.Report.Aggregate.Client;
+using Tgs.Fill.In.Player.Bucket.Client;
 
 namespace TGS.Workers.Schedulers.Jobs.Rounds;
 
@@ -9,34 +9,34 @@ public interface IFillPlayerBucketMinutelyWorkerService
 {
     Task<TgsResponse> ExecutionAsync();
 
-    Task<TgsResponse> ManualExecutionAsync(string date, int hour, int fromMinute, int toMinute,
-        bool fillPlayerBucket = true);
+    Task<TgsResponse> ManualExecutionAsync(DateTime startDate);
 }
 
 public class FillPlayerBucketMinutelyWorkerService : IFillPlayerBucketMinutelyWorkerService
 {
-    private readonly IReportAggregateClient _client;
+    private readonly IFillInPlayerBucketClient _client;
 
     public FillPlayerBucketMinutelyWorkerService(
-        IReportAggregateClient client)
+        IFillInPlayerBucketClient client)
         => _client = client;
 
     async Task<TgsResponse> IFillPlayerBucketMinutelyWorkerService.ExecutionAsync()
     {
         var startDate = DateTimeOffset.UtcNow.AddMinutes(-3);
-        var response = await _client.FillPlayerBucketMinutelyAsync(new(startDate));
-        return new() { ErrorMessage = response.Message };
+
+        var start = new DateTimeOffset(startDate.Year, startDate.Month, startDate.Day,
+            startDate.Hour,
+            startDate.Minute, 0, new(0,0,0));
+
+        await _client.FillPlayerBucketMinutelyAsync(new(start.UtcDateTime));
+
+        return default;
     }
 
-    async Task<TgsResponse> IFillPlayerBucketMinutelyWorkerService.ManualExecutionAsync(string date, int hour,
-        int fromMinute, int toMinute, bool fillPlayerBucket)
+    async Task<TgsResponse> IFillPlayerBucketMinutelyWorkerService.ManualExecutionAsync(DateTime startDate)
     {
-        var response =
-            await _client.ManualFillPlayerBucketMinutelyAsync(new(date,
-                hour,
-                fromMinute,
-                toMinute,
-                fillPlayerBucket));
-        return new() { ErrorMessage = response.Message };
+        await _client.FillPlayerBucketMinutelyAsync(new(startDate));
+
+        return default;
     }
 }
