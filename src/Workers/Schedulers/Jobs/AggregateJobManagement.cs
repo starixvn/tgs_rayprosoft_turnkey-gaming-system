@@ -15,41 +15,17 @@ namespace TGS.Workers.Schedulers.Jobs;
 [ManagementPage("手動aggregate", Consts.Queue.Schedule)]
 public class AggregateJobManagement
 {
-    private readonly IFillPlayerBucketMinutelyWorkerService _fillPlayerBucketMinutelyWorker;
     private readonly IPlayerAggregateReportWorkerService _playerAggregateWorker;
     private readonly IRoundAggregateWorkerService _roundAggregateWorker;
     private readonly IGameTypeRoundAggregateWorkerService _gameTypeRoundAggregateWorker;
 
     public AggregateJobManagement(IRoundAggregateWorkerService roundAggregateWorker,
         IPlayerAggregateReportWorkerService playerAggregateWorker,
-        IFillPlayerBucketMinutelyWorkerService fillPlayerBucketMinutelyWorker,
         IGameTypeRoundAggregateWorkerService gameTypeRoundAggregateWorker)
     {
         _roundAggregateWorker = roundAggregateWorker;
         _playerAggregateWorker = playerAggregateWorker;
-        _fillPlayerBucketMinutelyWorker = fillPlayerBucketMinutelyWorker;
         _gameTypeRoundAggregateWorker = gameTypeRoundAggregateWorker;
-    }
-
-    [Queue(Consts.Queue.Schedule)]
-    [Job]
-    [DisplayName("set round game setting")]
-    [Description("回寫Round的有效投注比例")]
-    [AutomaticRetry(Attempts = 3)]
-    [DisableConcurrentExecution(90)]
-    public async Task<TgsResponse> SetRoundGameSettingAsync(
-        [DisplayData("指定日期",
-            "2021/02/18 00:00:00",
-            "Default offset +08:00",
-            "2023/09/01 00:00:00")]
-        string dateTime,
-        PerformContext context = null)
-    {
-        context.WriteLine($"Start time:{DateTime.Now}");
-
-        return DateTimeOffset.TryParse($"{dateTime} +8:00", out var _dateTime)
-            ? await _fillPlayerBucketMinutelyWorker.ManualExecutionAsync(_dateTime.UtcDateTime)
-            : new() {ErrorMessage = "DateTime invalided"};
     }
 
     [Queue(Consts.Queue.Schedule)]
