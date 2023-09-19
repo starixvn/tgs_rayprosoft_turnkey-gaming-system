@@ -188,6 +188,7 @@ builder.Services.AddTransient<IBrandGameProviderService, BrandGameProviderServic
     .AddTransient<IGameTypeRoundAggregateWorkerService, GameTypeRoundAggregateWorkerService>()
     .AddTransient<IPlayerRebateWorkerService, PlayerRebateWorkerService>()
     .AddTransient<IAgentDividendWorkerService, AgentDividendWorkerService>()
+    .AddTransient<IFillPlayerBucketMinutelyWorkerService, FillPlayerBucketMinutelyWorkerService>()
     .AddTransient<IPlayerAllAgentRebateWorkerService, PlayerAllAgentRebateWorkerService>()
     .AddTransient<IPromotionSettleRebateDailyWorkerService, PromotionSettleRebateDailyWorkerService>()
     .AddTransient<IPromotionSendRebateDailyWeeklyWorkerService, PromotionSendRebateDailyWeeklyWorkerService>()

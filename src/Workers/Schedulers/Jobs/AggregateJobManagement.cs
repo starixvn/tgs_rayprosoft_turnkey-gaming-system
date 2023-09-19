@@ -15,17 +15,59 @@ namespace TGS.Workers.Schedulers.Jobs;
 [ManagementPage("手動aggregate", Consts.Queue.Schedule)]
 public class AggregateJobManagement
 {
+    private readonly IFillPlayerBucketMinutelyWorkerService _fillPlayerBucketMinutelyWorker;
     private readonly IPlayerAggregateReportWorkerService _playerAggregateWorker;
     private readonly IRoundAggregateWorkerService _roundAggregateWorker;
     private readonly IGameTypeRoundAggregateWorkerService _gameTypeRoundAggregateWorker;
 
     public AggregateJobManagement(IRoundAggregateWorkerService roundAggregateWorker,
         IPlayerAggregateReportWorkerService playerAggregateWorker,
+        IFillPlayerBucketMinutelyWorkerService fillPlayerBucketMinutelyWorker,
         IGameTypeRoundAggregateWorkerService gameTypeRoundAggregateWorker)
     {
         _roundAggregateWorker = roundAggregateWorker;
         _playerAggregateWorker = playerAggregateWorker;
+        _fillPlayerBucketMinutelyWorker = fillPlayerBucketMinutelyWorker;
         _gameTypeRoundAggregateWorker = gameTypeRoundAggregateWorker;
+    }
+
+    [Queue(Consts.Queue.Schedule)]
+    [Job]
+    [DisplayName("set round game setting")]
+    [Description("回寫Round的有效投注比例")]
+    [AutomaticRetry(Attempts = 3)]
+    [DisableConcurrentExecution(90)]
+    public async Task<TgsResponse> SetRoundGameSettingAsync(
+        [DisplayData("指定日期",
+            "2021/02/18",
+            "Default offset +08:00")]
+        string dateTime = "",
+        [DisplayData("指定小時",
+            "",
+            "0~23, 13 = 13~14")]
+        int hour = 0,
+        [DisplayData("指定開始分",
+            "",
+            "0~59")]
+        int fromMinute = 0,
+        [DisplayData("指定結束分",
+            "",
+            "0~59, 0~50 = 從0分到51分內")]
+        int toMinute = 1,
+        [DisplayData("是否填水桶",
+            "true")]
+        bool fillPlayerBucket = true,
+        PerformContext context = null)
+    {
+        context.WriteLine($"Start time:{DateTime.Now}");
+
+        if (DateTimeOffset.TryParse($"{dateTime} +8:00", out _))
+        {
+            return await _fillPlayerBucketMinutelyWorker.ManualExecutionAsync(dateTime, hour, fromMinute, toMinute,
+                fillPlayerBucket);
+        }
+
+        return new() {ErrorMessage = "DateTime invalided"};
     }
 
     [Queue(Consts.Queue.Schedule)]
