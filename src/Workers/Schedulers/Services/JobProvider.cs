@@ -6,7 +6,6 @@ using TGS.Workers.Schedulers.Jobs;
 using TGS.Workers.Schedulers.Jobs.Agents;
 using TGS.Workers.Schedulers.Jobs.ArrearsEmail;
 using TGS.Workers.Schedulers.Jobs.Players;
-using TGS.Workers.Schedulers.Jobs.Promotion;
 using TGS.Workers.Schedulers.Jobs.Reports;
 using TGS.Workers.Schedulers.Jobs.Rounds;
 
@@ -39,21 +38,6 @@ public sealed class JobProvider : BaseJobProvider
                 Cron.Daily(10, 15),
                 null,
                 typeof(PlayerRebateWorker),
-                TimeZoneInfo.FindSystemTimeZoneById(_TimeZoneId)),
-            new JobDescription(new("123E2BEE-7710-4D82-8CA7-BB1F1B83C4E0"),
-                "32 0,1 * * *",
-                null,
-                typeof(PromotionSettlementDailyWorker),
-                TimeZoneInfo.FindSystemTimeZoneById(_TimeZoneId)),
-            new JobDescription(new("123E2BEE-7720-4D82-8CA7-BB1F1B83C4E0"),
-                "33 0,1 * * 1",
-                null,
-                typeof(PromotionSettlementWeeklyWorker),
-                TimeZoneInfo.FindSystemTimeZoneById(_TimeZoneId)),
-            new JobDescription(new("123E2BEE-7730-4D82-8CA7-BB1F1B83C4E0"),
-                "34 0,1 1 * *",
-                null,
-                typeof(PromotionSettlementMonthlyWorker),
                 TimeZoneInfo.FindSystemTimeZoneById(_TimeZoneId)),
             new JobDescription(new("123E2BEE-7751-4D82-8CA7-BB1F1B83C4E9"),
                 Cron.Daily(0, 35),

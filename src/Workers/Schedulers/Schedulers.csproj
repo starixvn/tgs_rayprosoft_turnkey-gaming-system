@@ -23,6 +23,7 @@
     <PackageReference Include="Tgs.ProfitRebate.Client" Version="1.0.19" />
     <PackageReference Include="Tgs.Promotion.Client" Version="1.0.42" />
     <PackageReference Include="Tgs.Promotion.RebateService.Client" Version="0.0.3" />
+    <PackageReference Include="Tgs.Promotion.ReliefMoney.Client" Version="0.0.1" />
     <PackageReference Include="Tgs.Report.Aggregate.Client" Version="0.0.10" />
     <PackageReference Include="FluentdForward.OpenTelemetry.MessagePack" Version="0.2.0" />
     <PackageReference Include="OpenTelemetry" Version="1.4.0" />
